@@ -8,11 +8,22 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
+
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import {Dropdown } from 'react-native-material-dropdown';
+import { RadioButton } from 'react-native-paper';
+
 
 export default function Register() {
   const navigation = useNavigation();
+  const [userid,setuserid] = useState("");
+  const [username,setusername] = useState("");
+  const [password,setpassword] = useState("");
+  // const [faculty,setfaculty] = useState("");
+  const [checked, setChecked] = useState('first');
+  
 
   return (
     <View style={styles.container}>
@@ -28,17 +39,32 @@ export default function Register() {
         />
         <View style={styles.Loginbox}>
           <View style={styles.input}>
-            <TextInput placeholder="Username.."></TextInput>
+            <TextInput 
+             placeholder="User name.."
+             onChangeText={(username: string) => {
+              setusername(username);
+            }}
+              />
           </View>
           <View style={styles.input}>
-            <TextInput placeholder="Password.."></TextInput>
+            <TextInput placeholder="Password.."
+             onChangeText={(password: string) => {
+                setpassword(password);
+             }
+            }
+            ></TextInput>
           </View>
           <View style={styles.input}>
-            <TextInput placeholder="User Id.."></TextInput>
+            <TextInput placeholder="User Id.." 
+              onChangeText={(userid: string) => {
+                setuserid(userid);
+              }}
+              value={userid}></TextInput>
           </View>
-          <View style={styles.input}>
+          {/* <View style={styles.input}>
             <TextInput placeholder="Faculty.."></TextInput>
-          </View>
+          </View> */}
+          
 
           <View style={styles.button}>
             <TouchableOpacity
