@@ -69,10 +69,14 @@ export default function Login() {
                   user
                 );
                 if (response.data) {
-                  // console.log('first', response.data)
+                  console.log('first', response.data)
                   // SyncStorage.set('faculty', response.data.faculty);
                   navigation.navigate("HomeScreen" as never, {
                     term: response.data.faculty,
+                    student: {
+                      username: response.data.userName,
+                      userid: response.data.userId
+                    }
                   } as never);
                 }
                 else{
@@ -175,6 +179,3 @@ const styles = StyleSheet.create({
 });
 
 
-type CourseProps = {
-  term: string;
-}

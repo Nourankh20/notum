@@ -17,21 +17,26 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Register from "./screens/Register";
 import HomeScreen from "./screens/HomeScreen";
 import CreatePost from "./screens/CreatePost";
+import Ranking from "./screens/Ranking";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  React.useEffect
   return (
-    // <NavigationContainer>
-    //   <Stack.Navigator >
-    //     <Stack.Screen name='SignIn' component={Login}  options={{headerShown:false}}/>
-    //     <Stack.Screen name='Register' component={Register}/>
-    //     <Stack.Screen name='Course' component={Course}/>
-    //     <Stack.Screen name='HomeScreen' component={HomeScreen}/>
-    //     <Stack.Screen name='CreatePost' component={CreatePost}/>
-    //   </Stack.Navigator>
-    // </NavigationContainer>
-     <CreatePost/>
+    <NavigationContainer>
+      <Stack.Navigator >
+        <Stack.Screen name='SignIn' component={Login}  options={{headerShown:false}}/>
+        <Stack.Screen name='Register' component={Register}/>
+        <Stack.Screen name='Course' component={Course}/>
+        <Stack.Screen name='HomeScreen' component={HomeScreen}/>
+        <Stack.Screen name='CreatePost' component={CreatePost}/>
+        <Stack.Screen name='Ranking' component={Ranking}/>
+
+      </Stack.Navigator>
+    </NavigationContainer>
+    //  <CreatePost/>
   );
 }
 

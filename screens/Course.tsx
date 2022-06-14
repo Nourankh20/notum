@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,25 +10,40 @@ import {
   Button,
   TouchableOpacity,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import axios from "axios";
 import CarouselClass from "../components/carousel";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { Camera, CameraType } from "expo-camera";
+import { shareAsync } from "expo-sharing";
+import * as MediaLibrary from "expo-media-library";
 
 export default function Course(props: CourseProps) {
   const [posts, SetPosts] = useState<post[]>();
   const [pressed, SetPress] = useState(false);
+
   const route = useRoute<RouteProps>();
   const { term } = route.params;
+  const { student } = route.params;
+
+  const cameraRef = useRef<Camera>(null);
+  // const [type, setType] = useState(CameraType.back);
+
+  const [hasCameraPermission, setHasCameraPermission] = useState<any>();
+  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
+    useState<any>();
+  const [photo, setPhoto] = useState<any>();
+
+  const navigation = useNavigation();
 
   useEffect(() => {
+    console.log("props.term :>> ", term);
     Promise.all([
       axios.get(`https://smd-server-notum.vercel.app/posts/${term}`),
     ]).then(([{ data: posts }]) => {
       if (posts) SetPosts(posts);
     });
-
-    console.log("props.term :>> ", term);
   }, [pressed]);
 
   return (
@@ -86,7 +101,18 @@ export default function Course(props: CourseProps) {
             flexDirection: "row",
           }}
         >
-          <TouchableOpacity style={{ flexDirection: "row", padding: 5 }}>
+          <TouchableOpacity
+            style={{ flexDirection: "row", padding: 5 }}
+            onPress={() => {
+              console.log("student", student);
+              navigation.navigate(
+                "Ranking" as never,
+                {
+                  term: term,
+                } as never
+              );
+            }}
+          >
             <Image
               resizeMode="cover"
               style={{
@@ -190,7 +216,23 @@ export default function Course(props: CourseProps) {
             </View>
           </ScrollView>
         </View>
-        <TouchableOpacity style={{ left: "33%", bottom: "-7%" }}>
+
+        <TouchableOpacity
+          style={{ left: "33%", bottom: "-7%" }}
+          onPress={() => {
+            console.log("student", student);
+            navigation.navigate(
+              "CreatePost" as never,
+              {
+                term: term,
+                student: {
+                  username: student.username,
+                  userid: student.userid,
+                },
+              } as never
+            );
+          }}
+        >
           <Image
             resizeMode="contain"
             style={{
@@ -293,6 +335,10 @@ const styles = StyleSheet.create({
     // marginBottom: 20,
     // padding:30
   },
+  preview: {
+    alignSelf: "stretch",
+    flex: 1,
+  },
   //   button:{},
 });
 
@@ -309,6 +355,7 @@ type post = {
 
 type RouteParams = {
   term: string;
+  student: student;
 };
 
 type RouteProps = {
@@ -319,4 +366,10 @@ type RouteProps = {
 
 type CourseProps = {
   term: string;
+  student: student;
+};
+
+type student = {
+  username: string;
+  userid: number;
 };

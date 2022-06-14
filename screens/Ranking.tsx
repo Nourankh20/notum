@@ -17,12 +17,11 @@ import { Card } from "react-native-elements";
 import CarouselClass from "../components/carousel";
 import { useRoute } from "@react-navigation/native";
 
-export default function HomeScreen(props: CourseProps) {
-  const [courses, SetCourses] = useState<Course[]>();
+export default function Ranking(props: CourseProps) {
+  const [students, SetStudents] = useState<student[]>();
   const [posts, SetPosts] = useState();
   const route = useRoute<RouteProps>();
   const { term } = route.params;
-  const {student} = route.params;
   const navigation = useNavigation();
 
   // console.log("object :>> ", faculty);
@@ -30,14 +29,14 @@ export default function HomeScreen(props: CourseProps) {
   useEffect(() => {
     Promise.all([
       axios.get(
-        `https://smd-server-notum.vercel.app/course/${term.toString()}`
+        `https://smd-server-notum.vercel.app/posts/rank/${term.toString()}`
       ),
     ]).then(([{ data: res }]) => {
-      if (res) SetCourses(res);
+      if (res) SetStudents(res);
+      console.log('res :>> ', res);
     });
 
     console.log("props.term :>> ", term);
-    console.log("props.term :>> ", student);
 
   }, []);
   return (
@@ -47,19 +46,12 @@ export default function HomeScreen(props: CourseProps) {
         resizeMode="cover"
         style={styles.image}
       >
-        <Text style={styles.text}> All Courses</Text>
+        <Text style={styles.text}> Ranking for {term} course</Text>
         <ScrollView style={{ marginBottom: 20, padding: 10 }}>
-          {courses?.map((course: Course, index) => (
+          {students?.map((student: student, index) => (
             <TouchableOpacity 
             key={index}
-              onPress={()=>{
-                navigation.navigate("Course" as never, {
-                  term: course.code,student:{ 
-                    username: student.username,
-                    userid: student.userid
-                  }
-                } as never);
-              }}
+
             >
               <Card
                 key={index}
@@ -71,9 +63,9 @@ export default function HomeScreen(props: CourseProps) {
                 }}
               >
                 <Card.Title
-                  style={{ fontWeight: "bold", fontSize: 17, margin: 20 }}
+                  style={{ fontWeight: "bold", fontSize:17, margin: 20 }}
                 >
-                  {course.name}
+                  {student._id}
                 </Card.Title>
                 <Card.Divider />
                 <Text
@@ -84,7 +76,7 @@ export default function HomeScreen(props: CourseProps) {
                     fontSize: 17,
                   }}
                 >
-                  {course.code}
+                  {student.likes}
                 </Text>
               </Card>
             </TouchableOpacity>
@@ -149,7 +141,7 @@ const styles = StyleSheet.create({
   },
   text: {
     alignSelf: "center",
-    fontSize: 35,
+    fontSize: 25,
     fontWeight: "bold",
     margin: 10,
   },
@@ -185,8 +177,8 @@ const styles = StyleSheet.create({
 });
 
 type student = {
-  username: string;
-  userid: number;
+  _id: string;
+  likes: number;
 };
 
 type RouteParams = {
