@@ -11,63 +11,26 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import axios from 'axios';
-
+import axios from "axios";
 import CarouselClass from "../components/carousel";
+import { useRoute } from "@react-navigation/native";
 
-export default function Course() {
-  const data = [
-    {
-      StudentName: "Nouran Khaled",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        'https://i.pinimg.com/originals/4e/97/6e/4e976e639deade3c575f2187c9f020fc.jpg',
-        'https://i.pinimg.com/originals/8d/de/8c/8dde8c9847bd802c01d6dca1e66a5843.jpg',
-        'https://i.pinimg.com/236x/e2/54/a2/e254a2b75c6d954d6d8d4bf7e8cc0d99.jpg'
-    ]
-    },
+export default function Course(props: CourseProps) {
+  const [posts, SetPosts] = useState<post[]>();
+  const [pressed, SetPress] = useState(false);
+  const route = useRoute<RouteProps>();
+  const { term } = route.params;
 
-    {
-      StudentName: "Mohamed Mazen",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        'https://i.pinimg.com/originals/4e/97/6e/4e976e639deade3c575f2187c9f020fc.jpg',
-        // 'https://i.pinimg.com/originals/8d/de/8c/8dde8c9847bd802c01d6dca1e66a5843.jpg',
-        'https://i.pinimg.com/236x/e2/54/a2/e254a2b75c6d954d6d8d4bf7e8cc0d99.jpg'
-    ]
-    },
-       {
-      StudentName: "Nouran Khaled",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        'https://i.pinimg.com/originals/4e/97/6e/4e976e639deade3c575f2187c9f020fc.jpg',
-        'https://i.pinimg.com/originals/8d/de/8c/8dde8c9847bd802c01d6dca1e66a5843.jpg',
-        'https://i.pinimg.com/236x/e2/54/a2/e254a2b75c6d954d6d8d4bf7e8cc0d99.jpg'
-    ]
-    },
+  useEffect(() => {
+    Promise.all([
+      axios.get(`https://smd-server-notum.vercel.app/posts/${term}`),
+    ]).then(([{ data: posts }]) => {
+      if (posts) SetPosts(posts);
+    });
 
-    {
-      StudentName: "Mohamed Mazen",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        ''
-    ]
-    },
+    console.log("props.term :>> ", term);
+  }, [pressed]);
 
-  ];
-
-  const [course, SetCourse] = useState();
-  const [posts, SetPosts] = useState();
-
-
-  // useEffect(() => {
-  //   Promise.all([
-  //     axios.get(`http://192.168.1.12:3000/posts/`),])
-  //          .then(([{ data: postsResults }]) => {
-  //              if (postsResults) SetPosts(postsResults);
-  //           }
-  //    );
-  // }, []);
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -75,47 +38,10 @@ export default function Course() {
         resizeMode="cover"
         style={styles.image}
       >
-        {/* Menu and logo in header
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            // marginTop: 35,
-            flexDirection: "row",
-          }}
-        >
-          <TouchableOpacity>
-            <Image
-              resizeMode="stretch"
-              style={{
-                width: 45,
-                height: 30,
-                right: 0,
-                position: "absolute",
-                // marginTop: 5,
-                // marginLeft: 45,
-              }}
-              source={require("../assets/menu.png")}
-            />
-          </TouchableOpacity>
-
-          <Image
-            resizeMode="cover"
-            style={{
-              width: 50,
-              height: 50,
-              left: 0,
-              position: "absolute",
-            }}
-            source={require("../assets/Logo.png")}
-          />
-        </View> */}
-
         {/* The logo and course name and code */}
         <View
           style={{
             flexDirection: "row",
-            // alignSelf:'center'
           }}
         ></View>
 
@@ -133,7 +59,7 @@ export default function Course() {
               width: 60,
               height: 60,
               margin: 30,
-              marginRight:15,
+              marginRight: 15,
             }}
             source={require("../assets/cslogo.png")}
           />
@@ -160,7 +86,7 @@ export default function Course() {
             flexDirection: "row",
           }}
         >
-          <TouchableOpacity style={{ flexDirection: "row",padding:5 }}>
+          <TouchableOpacity style={{ flexDirection: "row", padding: 5 }}>
             <Image
               resizeMode="cover"
               style={{
@@ -185,12 +111,11 @@ export default function Course() {
         </View>
         <View style={styles.scrollview}>
           <ScrollView style={{ width: "100%" }}>
-          <View style={{ margin: -100 }}/>
+            <View style={{ margin: -100 }} />
 
-          {
-              data?.map((student,index)=>(
-                <View style={styles.Loginbox} key={index}>
-                <View style={{ flexDirection: "row" }}>
+            {posts?.map((posts, index) => (
+              <View style={styles.Loginbox} key={index}>
+                <View style={{ flexDirection: "row" }} key={index}>
                   <Image
                     resizeMode="contain"
                     style={{
@@ -203,52 +128,79 @@ export default function Course() {
                   />
 
                   <Text style={{ alignSelf: "center", fontWeight: "bold" }}>
-                    {student.StudentName}, at {student.Timing}
+                    {posts.username}, at {posts.timing}
                   </Text>
                 </View>
-                <CarouselClass images={student.image} />
-                
-                <View style={{justifyContent:'space-between',alignSelf:'center',flexDirection:'row'}}>
-                  <TouchableOpacity style={{
-                      width: '50%',
-                      alignItems:'center'
-                    }}>
-                <Image
-                    resizeMode="contain"
+                <CarouselClass images={[posts.image]} />
+
+                <View
+                  style={{
+                    justifyContent: "space-between",
+                    alignSelf: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  <TouchableOpacity
                     style={{
-                      width: 25,
-                      height: 25,
-                      marginBottom: 10,
+                      width: "50%",
+                      alignItems: "center",
                     }}
-                    source={require("../assets/raise-hand.png")}
-                  />
+                    onPress={async () => {
+                      if (pressed == false) {
+                        console.log("posts._id", posts._id.toString());
+                        await axios
+                          .post(
+                            `https://smd-server-notum.vercel.app/posts/likes/${posts._id.toString()}`
+                          )
+                          .then((res) => {
+                            console.log("res", res.data);
+                            SetPress(true);
+                          })
+                          .catch((error) => {
+                            console.log("Api error");
+                            alert(error.message);
+                          });
+                      }
+                    }}
+                  >
+                    <Image
+                      resizeMode="contain"
+                      style={{
+                        width: 25,
+                        height: 25,
+                        marginBottom: 10,
+                      }}
+                      source={require("../assets/raise-hand.png")}
+                    />
                   </TouchableOpacity>
-                  <TouchableOpacity  style={{
-                      width: '50%',
-                      alignItems:'center'
-                    }}>
-                  <Image
-                    resizeMode="contain"
+                  <TouchableOpacity
                     style={{
-                      width: 25,
-                      height: 25,
-                      marginBottom: 10,
+                      width: "50%",
+                      alignItems: "center",
                     }}
-                    source={require("../assets/cloud-computing.png")}
-                  /></TouchableOpacity>
+                  >
+                    <Text>{posts.no_likes}</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-              ))
-             
-            }
+            ))}
 
             <View style={{ margin: 180 }}>
-              <Text> {   } </Text>
+              <Text> {} </Text>
             </View>
-          {/* </ScrollView> */}
-        </ScrollView>
+          </ScrollView>
         </View>
-        
+        <TouchableOpacity style={{ left: "33%", bottom: "-7%" }}>
+          <Image
+            resizeMode="contain"
+            style={{
+              width: 45,
+              height: 45,
+              marginBottom: 10,
+            }}
+            source={require("../assets/plus.png")}
+          />
+        </TouchableOpacity>
       </ImageBackground>
 
       <StatusBar style="auto" />
@@ -335,19 +287,36 @@ const styles = StyleSheet.create({
     bottom: -70,
     width: "90%",
     alignSelf: "center",
-    justifyContent:'center',
-    marginBottom:50,
-    height:"65%"
+    justifyContent: "center",
+    marginBottom: 50,
+    height: "65%",
     // marginBottom: 20,
     // padding:30
   },
   //   button:{},
 });
 
+type post = {
+  userid: number;
+  username: string;
+  no_likes: number;
+  no_downloads: number;
+  timing: string;
+  courseid: string;
+  image: string;
+  _id: string;
+};
 
-type student = {
-  StudentName: string;
-  Timing: string;
-  // addressFmt: string;
-  image: string[];
+type RouteParams = {
+  term: string;
+};
+
+type RouteProps = {
+  params: RouteParams;
+  name: string;
+  key: string;
+};
+
+type CourseProps = {
+  term: string;
 };

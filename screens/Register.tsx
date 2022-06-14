@@ -8,22 +8,21 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
-
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import {Dropdown } from 'react-native-material-dropdown';
-import { RadioButton } from 'react-native-paper';
+import axios from "axios";
+import { useRoute } from "@react-navigation/native";
 
 
 export default function Register() {
   const navigation = useNavigation();
-  const [userid,setuserid] = useState("");
-  const [username,setusername] = useState("");
-  const [password,setpassword] = useState("");
-  // const [faculty,setfaculty] = useState("");
-  const [checked, setChecked] = useState('first');
   
+  const [userid, setuserid] = useState("");
+  const [username, setusername] = useState("");
+  const [password, setpassword] = useState("");
+  const [faculty, setfaculty] = useState("CS");
+  const [email, setemail] = useState("");
 
   return (
     <View style={styles.container}>
@@ -39,43 +38,79 @@ export default function Register() {
         />
         <View style={styles.Loginbox}>
           <View style={styles.input}>
-            <TextInput 
-             placeholder="User name.."
-             onChangeText={(username: string) => {
-              setusername(username);
-            }}
-              />
+            <TextInput
+              placeholder="User name.."
+              onChangeText={(username: string) => {
+                setusername(username);
+              }}
+            />
           </View>
           <View style={styles.input}>
-            <TextInput placeholder="Password.."
-             onChangeText={(password: string) => {
+            <TextInput
+              placeholder="Password.."
+              onChangeText={(password: string) => {
                 setpassword(password);
-             }
-            }
+              }}
             ></TextInput>
           </View>
           <View style={styles.input}>
-            <TextInput placeholder="User Id.." 
+            <TextInput
+              placeholder="User Id.."
               onChangeText={(userid: string) => {
                 setuserid(userid);
               }}
-              value={userid}></TextInput>
+              value={userid}
+            ></TextInput>
           </View>
-          {/* <View style={styles.input}>
-            <TextInput placeholder="Faculty.."></TextInput>
-          </View> */}
-          
+          <View style={styles.input}>
+            <TextInput
+              placeholder="Email.."
+              onChangeText={(email: string) => {
+                setemail(email);
+              }}
+              value={email}
+            ></TextInput>
+          </View>
 
           <View style={styles.button}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Course" as never)}
+            // onPress={() => navigation.navigate("Course" as never)
+            // }
             >
-              <Text style={styles.text}>
+              <Text
+                style={styles.text}
+                onPress={async () => {
+                  const user = {
+                    userId: Number(userid),
+                    password: password,
+                    email: email,
+                    userName: username,
+                    faculty: faculty,
+                  };
+                  const response = await axios
+                    .post(
+                      "https://smd-server-notum.vercel.app/user/register",
+                      user
+                    )
+                    .then((res) => {
+                      if (res.data == false) alert("Account already exists");
+                      else {
+                        console.log("res", res.data);
+                        navigation.navigate("SignIn" as never);
+                      }
+                    })
+                    .catch((error) => {
+                      console.log("Api error");
+                      alert(error.message);
+                    });
+
+                  // console.log('response :>> ', response);
+                }}
+              >
                 Sign Up
-                </Text>
+              </Text>
             </TouchableOpacity>
           </View>
-     
         </View>
       </ImageBackground>
 

@@ -16,25 +16,22 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Register from "./screens/Register";
 import HomeScreen from "./screens/HomeScreen";
+import CreatePost from "./screens/CreatePost";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-
-
-
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator >
-        <Stack.Screen name='SignIn' component={Login}  options={{headerShown:false}}/>
-        <Stack.Screen name='Register' component={Register}/>
-        <Stack.Screen name='Course' component={Course}/>
-        <Stack.Screen name='HomeScreen' component={HomeScreen}/>
-
-      </Stack.Navigator>
-    </NavigationContainer>
-    //  <Login/>
+    // <NavigationContainer>
+    //   <Stack.Navigator >
+    //     <Stack.Screen name='SignIn' component={Login}  options={{headerShown:false}}/>
+    //     <Stack.Screen name='Register' component={Register}/>
+    //     <Stack.Screen name='Course' component={Course}/>
+    //     <Stack.Screen name='HomeScreen' component={HomeScreen}/>
+    //     <Stack.Screen name='CreatePost' component={CreatePost}/>
+    //   </Stack.Navigator>
+    // </NavigationContainer>
+     <CreatePost/>
   );
 }
 

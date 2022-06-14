@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import axios from "axios";
 
+
 export default function Login() {
   const navigation = useNavigation();
   const [password, setPassword] = useState("");
@@ -61,13 +62,18 @@ export default function Login() {
                   userid: Number(userid),
                   password: password,
                 };
+    
 
                 const response = await axios.post(
                   "https://smd-server-notum.vercel.app/user/login",
                   user
                 );
                 if (response.data) {
-                  navigation.navigate("Course" as never);
+                  // console.log('first', response.data)
+                  // SyncStorage.set('faculty', response.data.faculty);
+                  navigation.navigate("HomeScreen" as never, {
+                    term: response.data.faculty,
+                  } as never);
                 }
                 else{
                   alert('Wrong inputs')
@@ -167,3 +173,8 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
+
+
+type CourseProps = {
+  term: string;
+}

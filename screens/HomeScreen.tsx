@@ -11,63 +11,32 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import axios from 'axios';
-
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { Card } from "react-native-elements";
 import CarouselClass from "../components/carousel";
+import { useRoute } from "@react-navigation/native";
 
-export default function HomeScreen() {
-  const data = [
-    {
-      StudentName: "Nouran Khaled",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        'https://i.pinimg.com/originals/4e/97/6e/4e976e639deade3c575f2187c9f020fc.jpg',
-        'https://i.pinimg.com/originals/8d/de/8c/8dde8c9847bd802c01d6dca1e66a5843.jpg',
-        'https://i.pinimg.com/236x/e2/54/a2/e254a2b75c6d954d6d8d4bf7e8cc0d99.jpg'
-    ]
-    },
-
-    {
-      StudentName: "Mohamed Mazen",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        'https://i.pinimg.com/originals/4e/97/6e/4e976e639deade3c575f2187c9f020fc.jpg',
-        // 'https://i.pinimg.com/originals/8d/de/8c/8dde8c9847bd802c01d6dca1e66a5843.jpg',
-        'https://i.pinimg.com/236x/e2/54/a2/e254a2b75c6d954d6d8d4bf7e8cc0d99.jpg'
-    ]
-    },
-       {
-      StudentName: "Nouran Khaled",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        'https://i.pinimg.com/originals/4e/97/6e/4e976e639deade3c575f2187c9f020fc.jpg',
-        'https://i.pinimg.com/originals/8d/de/8c/8dde8c9847bd802c01d6dca1e66a5843.jpg',
-        'https://i.pinimg.com/236x/e2/54/a2/e254a2b75c6d954d6d8d4bf7e8cc0d99.jpg'
-    ]
-    },
-
-    {
-      StudentName: "Mohamed Mazen",
-      Timing: "02/06/2022 13:51 pm",
-      image:[
-        ''
-    ]
-    },
-
-  ];
-
-  const [course, SetCourse] = useState();
+export default function HomeScreen(props: CourseProps) {
+  const [courses, SetCourses] = useState<Course[]>();
   const [posts, SetPosts] = useState();
+  const route = useRoute<RouteProps>();
+  const { term } = route.params;
+  const navigation = useNavigation();
 
+  // console.log("object :>> ", faculty);
 
-  // useEffect(() => {
-  //   Promise.all([
-  //     axios.get(`smd-server-notum.vercel.app/posts/${}`),])
-  //          .then(([{ data: postsResults }]) => {
-  //              if (postsResults) SetPosts(postsResults);
-  //           }
-  //    );
-  // }, []);
+  useEffect(() => {
+    Promise.all([
+      axios.get(
+        `https://smd-server-notum.vercel.app/course/${term.toString()}`
+      ),
+    ]).then(([{ data: res }]) => {
+      if (res) SetCourses(res);
+    });
+
+    console.log("props.term :>> ", term);
+  }, []);
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -75,183 +44,47 @@ export default function HomeScreen() {
         resizeMode="cover"
         style={styles.image}
       >
-        {/* Menu and logo in header
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            // marginTop: 35,
-            flexDirection: "row",
-          }}
-        >
-          <TouchableOpacity>
-            <Image
-              resizeMode="stretch"
-              style={{
-                width: 45,
-                height: 30,
-                right: 0,
-                position: "absolute",
-                // marginTop: 5,
-                // marginLeft: 45,
-              }}
-              source={require("../assets/menu.png")}
-            />
-          </TouchableOpacity>
-
-          <Image
-            resizeMode="cover"
-            style={{
-              width: 50,
-              height: 50,
-              left: 0,
-              position: "absolute",
-            }}
-            source={require("../assets/Logo.png")}
-          />
-        </View> */}
-
-        {/* The logo and course name and code */}
-        <View
-          style={{
-            flexDirection: "row",
-            // alignSelf:'center'
-          }}
-        ></View>
-
-        <View
-          style={{
-            top: 0,
-            left: 0,
-            position: "absolute",
-            flexDirection: "row",
-          }}
-        >
-          <Image
-            resizeMode="contain"
-            style={{
-              width: 60,
-              height: 60,
-              margin: 30,
-              marginRight:15,
-            }}
-            source={require("../assets/cslogo.png")}
-          />
-
-          {/* The course code and name */}
-          <View>
-            <Text style={{ marginTop: 26, fontSize: 30, fontWeight: "bold" }}>
-              ICS609
-            </Text>
-
-            <Text style={{ fontSize: 15, color: "grey", fontWeight: "bold" }}>
-              Advanced Machine Learning
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            alignContent: "center",
-            alignSelf: "center",
-            position: "absolute",
-            top: 0,
-            marginTop: 80,
-            flexDirection: "row",
-          }}
-        >
-          <TouchableOpacity style={{ flexDirection: "row",padding:5 }}>
-            <Image
-              resizeMode="cover"
-              style={{
-                width: 45,
-                height: 45,
-                alignSelf: "center",
-                bottom: -15,
-              }}
-              source={require("../assets/crown.png")}
-            />
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-                marginTop: 30,
-                alignSelf: "center",
+        <Text style={styles.text}> All Courses</Text>
+        <ScrollView style={{ marginBottom: 20, padding: 10 }}>
+          {courses?.map((course: Course, index) => (
+            <TouchableOpacity 
+            key={index}
+              onPress={()=>{
+                navigation.navigate("Course" as never, {
+                  term: course.code,
+                } as never);
               }}
             >
-              View Ranking
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.scrollview}>
-          <ScrollView style={{ width: "100%" }}>
-          <View style={{ margin: -100 }}/>
-
-          {
-              data?.map((student,index)=>(
-                <View style={styles.Loginbox} key={index}>
-                <View style={{ flexDirection: "row" }}>
-                  <Image
-                    resizeMode="contain"
-                    style={{
-                      width: 30,
-                      height: 30,
-                      alignSelf: "center",
-                      margin: 10,
-                    }}
-                    source={require("../assets/cslogo.png")}
-                  />
-
-                  <Text style={{ alignSelf: "center", fontWeight: "bold" }}>
-                    {student.StudentName}, at {student.Timing}
-                  </Text>
-                </View>
-                <CarouselClass images={student.image} />
-                
-                <View style={{justifyContent:'space-between',alignSelf:'center',flexDirection:'row'}}>
-                  <TouchableOpacity style={{
-                      width: '50%',
-                      alignItems:'center'
-                    }}>
-                <Image
-                    resizeMode="contain"
-                    style={{
-                      width: 25,
-                      height: 25,
-                      marginBottom: 10,
-                    }}
-                    source={require("../assets/raise-hand.png")}
-                  />
-                  </TouchableOpacity>
-                  <TouchableOpacity  style={{
-                      width: '50%',
-                      alignItems:'center'
-                    }}>
-                  <Image
-                    resizeMode="contain"
-                    style={{
-                      width: 25,
-                      height: 25,
-                      marginBottom: 10,
-                    }}
-                    source={require("../assets/cloud-computing.png")}
-                  /></TouchableOpacity>
-                </View>
-              </View>
-              ))
-             
-            }
-
-            <View style={{ margin: 180 }}>
-              <Text> {   } </Text>
-            </View>
-          {/* </ScrollView> */}
+              <Card
+                key={index}
+                containerStyle={{
+                  borderRadius: 20,
+                  borderColor: "transparent",
+                  padding: 35,
+                  margin: 20,
+                }}
+              >
+                <Card.Title
+                  style={{ fontWeight: "bold", fontSize: 17, margin: 20 }}
+                >
+                  {course.name}
+                </Card.Title>
+                <Card.Divider />
+                <Text
+                  style={{
+                    justifyContent: "center",
+                    alignSelf: "center",
+                    color: "#8B0D32",
+                    fontSize: 17,
+                  }}
+                >
+                  {course.code}
+                </Text>
+              </Card>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
-        </View>
-        
       </ImageBackground>
-
-      <StatusBar style="auto" />
     </View>
   );
 }
@@ -310,8 +143,9 @@ const styles = StyleSheet.create({
   },
   text: {
     alignSelf: "center",
-    fontSize: 20,
+    fontSize: 35,
     fontWeight: "bold",
+    margin: 10,
   },
   text2: {
     alignSelf: "center",
@@ -335,19 +169,37 @@ const styles = StyleSheet.create({
     bottom: -70,
     width: "90%",
     alignSelf: "center",
-    justifyContent:'center',
-    marginBottom:50,
-    height:"65%"
+    justifyContent: "center",
+    marginBottom: 50,
+    height: "65%",
     // marginBottom: 20,
     // padding:30
   },
   //   button:{},
 });
 
-
 type student = {
   StudentName: string;
   Timing: string;
-  // addressFmt: string;
   image: string[];
+};
+
+type RouteParams = {
+  term: string;
+};
+
+type RouteProps = {
+  params: RouteParams;
+  name: string;
+  key: string;
+};
+
+type CourseProps = {
+  term: string;
+};
+
+type Course = {
+  name: string;
+  code: string;
+  faculty: string;
 };
