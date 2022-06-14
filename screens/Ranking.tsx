@@ -24,20 +24,23 @@ export default function Ranking(props: CourseProps) {
   const { term } = route.params;
   const navigation = useNavigation();
 
-  // console.log("object :>> ", faculty);
-
   useEffect(() => {
     Promise.all([
       axios.get(
         `https://smd-server-notum.vercel.app/posts/rank/${term.toString()}`
       ),
     ]).then(([{ data: res }]) => {
-      if (res) SetStudents(res);
-      console.log('res :>> ', res);
+      if (res) {
+        let sortedCompany = res.sort(
+          (a: { likes: number }, b: { likes: number }) =>
+            a.likes > b.likes ? -1 : 1
+        );
+        SetStudents(res);
+      }
+      console.log("res :>> ", res);
     });
 
     console.log("props.term :>> ", term);
-
   }, []);
   return (
     <View style={styles.container}>
@@ -49,10 +52,7 @@ export default function Ranking(props: CourseProps) {
         <Text style={styles.text}> Ranking for {term} course</Text>
         <ScrollView style={{ marginBottom: 20, padding: 10 }}>
           {students?.map((student: student, index) => (
-            <TouchableOpacity 
-            key={index}
-
-            >
+            <TouchableOpacity key={index}>
               <Card
                 key={index}
                 containerStyle={{
@@ -63,7 +63,7 @@ export default function Ranking(props: CourseProps) {
                 }}
               >
                 <Card.Title
-                  style={{ fontWeight: "bold", fontSize:17, margin: 20 }}
+                  style={{ fontWeight: "bold", fontSize: 17, margin: 20 }}
                 >
                   {student._id}
                 </Card.Title>
@@ -183,7 +183,7 @@ type student = {
 
 type RouteParams = {
   term: string;
-  student:student;
+  student: student;
 };
 
 type RouteProps = {
